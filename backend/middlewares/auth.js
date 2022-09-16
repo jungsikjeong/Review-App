@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken');
 const { sendError } = require('../utils/helper');
 const User = require('../models/user');
 
-exports.isAuth = () => async (req, res, next) => {
+exports.isAuth = async (req, res, next) => {
   const token = req.headers?.authorization;
 
   const jwtToken = token.split('Bearer ')[1];

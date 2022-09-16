@@ -21,6 +21,7 @@ export const AuthProvider = ({ children }) => {
     if (error) {
       return setAuthInfo({ ...authInfo, isPending: false, error });
     }
+
     setAuthInfo({
       profile: { ...user },
       isLoggedIn: true,
@@ -33,6 +34,7 @@ export const AuthProvider = ({ children }) => {
 
   const isAuth = async () => {
     const token = localStorage.getItem('auth-token');
+
     if (!token) return;
 
     setAuthInfo({ ...authInfo, isPending: true });
