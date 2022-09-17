@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createUser } from '../../api/auth';
 import { useAuth, useNotification } from '../../hooks';
+import { isValidEmail } from '../../utils/helper';
 import { commonModalClasses } from '../../utils/theme';
 
 import Container from '../Container';
@@ -12,7 +13,7 @@ import Submit from '../form/Submit';
 import Title from '../form/Title';
 
 const validateUserInfo = ({ name, email, password }) => {
-  const isValidEmail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+  // const isValidEmail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
   const isValidName = /^[ㄱ-ㅎ|가-힣|a-z|A-Z|]+$/;
 
   if (!name.trim()) return { ok: false, error: '이름을 입력해주세요!' };
@@ -24,7 +25,7 @@ const validateUserInfo = ({ name, email, password }) => {
       error: '유효하지 않은 이름입니다!',
     };
   if (!email.trim()) return { ok: false, error: '이메일을 입력해주세요!' };
-  if (!isValidEmail.test(email))
+  if (!isValidEmail(email))
     return { ok: false, error: '유효하지않은 이메일입니다!' };
 
   if (!password.trim()) return { ok: false, error: '패스워드를 입력해주세요!' };

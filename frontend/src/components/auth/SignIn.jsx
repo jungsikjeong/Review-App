@@ -9,12 +9,11 @@ import FormContainer from '../form/FormContainer';
 import FormInput from '../form/FormInput';
 import Submit from '../form/Submit';
 import Title from '../form/Title';
+import { isValidEmail } from '../../utils/helper';
 
 const validateUserInfo = ({ name, email, password }) => {
-  const isValidEmail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-
   if (!email.trim()) return { ok: false, error: '이메일을 입력해주세요!' };
-  if (!isValidEmail.test(email))
+  if (!isValidEmail(email))
     return { ok: false, error: '유효하지않은 이메일입니다!' };
 
   if (!password.trim()) return { ok: false, error: '패스워드를 입력해주세요!' };

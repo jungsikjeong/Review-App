@@ -7,8 +7,8 @@ import Container from '../Container';
 import FormContainer from '../form/FormContainer';
 import Submit from '../form/Submit';
 import Title from '../form/Title';
-import { verifyUserEmail } from '../../api/auth';
-import { NotificationContext } from '../../context/NotificationProvider';
+import { resendEmailVerificationToken, verifyUserEmail } from '../../api/auth';
+import { useAuth, useNotification } from '../../hooks';
 
 const OTP_LENGTH = 6;
 let currentOTPIndex;
@@ -31,8 +31,13 @@ const EmailVerification = () => {
   const [otp, setOtp] = useState(new Array(OTP_LENGTH).fill(''));
   const [activeOtpIndex, setActiveOtpIndex] = useState(0);
 
+  const { isAuth, authInfo } = useAuth();
+  const { isLoggedIn, profile } = authInfo;
+  const isVerified = profile?.isVerified;
+
   const inputRef = useRef();
-  const { updateNotification } = NotificationContext();
+
+  const { updateNotification } = useNotification();
 
   const { state } = useLocation();
   const user = state?.user;
@@ -62,6 +67,14 @@ const EmailVerification = () => {
     setOtp([...newOtp]);
   };
 
+  const handleOTPResend = async () => {
+    const { error, message } = await resendEmailVerificationToken(user.id);
+
+    if (error) return updateNotification('error', error);
+
+    updateNotification('success', message);
+  };
+
   const handleKeyDown = ({ key }, index) => {
     currentOTPIndex = index;
 
@@ -72,19 +85,25 @@ const EmailVerification = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     if (!isValidOTP(otp)) {
       return updateNotification('error', '유효하지않은 OTP');
     }
 
     // submit otp
-    const { error, message } = await verifyUserEmail({
+    const {
+      error,
+      message,
+      user: userResponse,
+    } = await verifyUserEmail({
       OTP: otp.join(''), // ['1','2'] -> '12'
       userId: user.id,
     });
+
     if (error) return updateNotification('error', error);
 
     updateNotification('success', message);
+    localStorage.setItem('auth-token', userResponse.token);
+    isAuth();
   };
 
   useEffect(() => {
@@ -93,7 +112,8 @@ const EmailVerification = () => {
 
   useEffect(() => {
     if (!user) navigate('/not-fund');
-  }, [user, navigate]);
+    if (isLoggedIn && isVerified) navigate('/');
+  }, [user, isLoggedIn, isVerified, navigate]);
 
   return (
     <FormContainer>
@@ -123,7 +143,18 @@ const EmailVerification = () => {
               );
             })}
           </div>
-          <Submit value='Verify Account' />
+
+          <div>
+            <Submit value='Verify Account' />
+            <button
+              onClick={handleOTPResend}
+              type='button'
+              className='dark:text-white text-blue-500 
+            font-semibold hover:underline mt-2'
+            >
+              OTP 코드 재발급받기
+            </button>
+          </div>
         </form>
       </Container>
     </FormContainer>
