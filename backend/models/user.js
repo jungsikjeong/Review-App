@@ -15,6 +15,12 @@ const userSchema = mongoose.Schema({
   },
   password: { type: String, required: true },
   isVerified: { type: Boolean, required: true, default: false },
+  role: {
+    type: String,
+    required: true,
+    default: 'user',
+    enum: ['admin', 'user'],
+  },
 });
 
 userSchema.pre('save', async function (next) {

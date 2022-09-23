@@ -95,6 +95,7 @@ exports.verifyEmail = async (req, res) => {
       email: user.email,
       token: jwtToken,
       isVerified: user.isVerified,
+      role: user.role,
     },
     message: '이메일이 확인되었습니다.',
   });
@@ -222,9 +223,11 @@ exports.signIn = async (req, res, next) => {
   const matched = await user.comparePassword(password);
   if (!matched) return sendError(res, '비밀번호가 일치하지 않습니다.');
 
-  const { _id, name, isVerified } = user;
+  const { _id, name, role, isVerified } = user;
 
   const jwtToken = jwt.sign({ userId: _id }, process.env.JWT_SECRET);
 
-  res.json({ user: { id: _id, name, email, token: jwtToken, isVerified } });
+  res.json({
+    user: { id: _id, name, email, role, token: jwtToken, isVerified },
+  });
 };

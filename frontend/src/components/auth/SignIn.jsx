@@ -50,9 +50,9 @@ const SignIn = () => {
     handleLogin(userInfo.email, userInfo.password);
   };
 
-  useEffect(() => {
-    if (isLoggedIn) navigate('/');
-  }, [isLoggedIn, navigate]);
+  // useEffect(() => {
+  //   if (isLoggedIn) navigate('/');
+  // }, [isLoggedIn, navigate]);
 
   return (
     <FormContainer>
